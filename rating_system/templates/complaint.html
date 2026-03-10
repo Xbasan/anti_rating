@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пожаловаться - Антирейтинг</title>
+    <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/complaint_style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background"></div> 
+    <div class="content">
+        <header class="header">
+            <div class="container header__container">
+                <!-- ЛЕВАЯ ЧАСТЬ: Навигация (только для авторизованных) -->
+                {% if user.is_authenticated %}
+                <nav>
+                    <ul class="nav">
+                        <li><a href="{% url 'main' %}" class="nav__link {% if request.resolver_match.url_name == 'main' %}nav__link--active{% endif %}"><i class="fas fa-home"></i> Главная</a></li>
+                        <li><a href="{% url 'news' %}" class="nav__link {% if request.resolver_match.url_name == 'news' %}nav__link--active{% endif %}"><i class="fas fa-newspaper"></i> Новости</a></li>
+                        <li><a href="{% url 'complaint' %}" class="nav__link {% if request.resolver_match.url_name == 'complaint' %}nav__link--active{% endif %}"><i class="fas fa-exclamation-circle"></i> Пожаловаться</a></li>
+                    </ul>
+                </nav>
+                {% endif %}
+                
+                <!-- ПРАВАЯ ЧАСТЬ: ФИО + Выйти (только для авторизованных) -->
+                {% if user.is_authenticated %}
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+                    <!-- ФИО преподавателя -->
+                    <span style="color: #fff; font-weight: 500;">
+                        <i class="fas fa-user"></i> {{ user.teacher_profile.full_name }}
+                    </span>
+                    
+                    <!-- Кнопка Выйти -->
+                    <a href="{% url 'logout' %}" class="nav__link nav__link--button">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+        <main class="container main">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="page-title-block">
+                <h1 class="page-title">Подать жалобу</h1>
+            </div>
+            <section class="complaint-form-section">
+                <div class="form-container">
+                    <form class="complaint-form" action="#" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="group" class="form-label"><i class="fas fa-users"></i>Группа</label>
+                            <select name="group_id" id="group" class="form-select" required>
+                                <option value="" disabled selected>Выберите группу</option>
+                                {% for group in groups %}
+                                <option value="{{ group.id }}">{{ group.group_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="student" class="form-label">
+                                <i class="fas fa-user-graduate"></i>Студент
+                            </label>
+                            <select name="student_id" id="student" class="form-select" required disabled>
+                                <option value="" selected>Выберите студента</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="complaint_type" class="form-label">
+                                <i class="fas fa-exclamation-triangle"></i>Тип нурушения
+                            </label>
+                            <select name="type_id" id="complaint_type" class="form-select">
+                                <option value="" disabled selected>Выберите тип нарушения</option>
+                                {% for type in complaint_types %}
+                                <option value="{{ type.id }}">{{ type.name }} ({{ type.score }} балл{{ type.score|pluralize:",а" }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-comment-dots"></i>Описание нарушения
+                            </label>
+                            <textarea 
+                            name="explanation" 
+                            id="description"
+                            class="form-textarea"
+                            rows="7"
+                            placeholder="Подробно опишите ситуацию: что, где, когда произошло..."
+                            required></textarea>
+                        </div>
+                        <div class="form-group form-group--button">
+                            <button type="submit" class="form-submit-button">
+                                <i class="fas fa-paper-plane"></i>Отправить жалобу
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+<script src="{% static 'js/complaint.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+{% load static %}  <!-- ← ДОБАВЬ ЭТУ СТРОКУ -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Антирейтинг</title>
+  <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="background"></div>
+  
+  <div class="content">
+    <header class="header">
+        <div class="container header__container">
+            <!-- ЛЕВАЯ ЧАСТЬ: Навигация (только для авторизованных) -->
+            {% if user.is_authenticated %}
+            <nav>
+                <ul class="nav">
+                    <li><a href="{% url 'main' %}" class="nav__link {% if request.resolver_match.url_name == 'main' %}nav__link--active{% endif %}"><i class="fas fa-home"></i> Главная</a></li>
+                    <li><a href="{% url 'news' %}" class="nav__link {% if request.resolver_match.url_name == 'news' %}nav__link--active{% endif %}"><i class="fas fa-newspaper"></i> Новости</a></li>
+                    <li><a href="{% url 'complaint' %}" class="nav__link {% if request.resolver_match.url_name == 'complaint' %}nav__link--active{% endif %}"><i class="fas fa-exclamation-circle"></i> Пожаловаться</a></li>
+                </ul>
+            </nav>
+            {% endif %}
+            
+            <!-- ПРАВАЯ ЧАСТЬ: ФИО + Выйти (только для авторизованных) -->
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+                <!-- ФИО преподавателя -->
+                <span style="color: #fff; font-weight: 500;">
+                    <i class="fas fa-user"></i> {{ user.teacher_profile.full_name }}
+                </span>
+                
+                <!-- Кнопка Выйти -->
+                <a href="{% url 'logout' %}" class="nav__link nav__link--button">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container main">
+      
+      <div class="page-title-block">
+        <h1 class="page-title">АНТИРЕЙТИНГ</h1>
+      </div>
+      
+      <section class="search">
+        <form class="search__form">
+          <div class="search__container">
+            <i class="fas fa-search search__icon"></i>
+            <input type="text" class="search__input" placeholder="Поиск студента...">
+            <button type="submit" class="search__button">ИСКАТЬ</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="rating">
+        <h2 class="rating__title">
+          <i class="fas fa-chart-line"></i> Нарушители
+        </h2>
+        
+        <div class="table">
+          
+          <div class="table__header">
+            <div class="table__cell--place">№</div>
+            <div class="table__cell--name">Студент</div>
+            <div class="table__cell--group">Группа</div>
+            <div class="table__cell--complaints">Общий счёт</div>
+            <div class="table__cell--status">Статус</div>
+          </div>
+          
+          <div class="table__body">
+            {% for data in students_with_risk %}
+            {% with student=data.student %}
+            <div class="table__row">
+                <div class="table__cell--place">{{ forloop.counter }}</div>
+                <div class="table__cell--name">{{ student.student_name }}</div>
+                <div class="table__cell--group">{{ student.group.group_name }}</div>
+                <div class="table__cell--complaints">{{ student.total_score }}
+                  
+                </div>
+                <div class="table__cell--status {{ data.css_class }}">
+                    {{ data.risk_status }}
+                </div>
+            </div>
+            {% endwith %}
+            {% empty %}
+            <div class="table__row">
+                <div class="table__cell--name" style="grid-column: 1 / -1; text-align: center; padding: 30px;">
+                    Нарушителей пока нет
+                </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

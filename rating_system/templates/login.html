@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход - Антирейтинг</title>
+    <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
+</head>
+<body>
+<div class="background"></div>
+<div class="content">
+    <div style="max-width: 400px; margin: 100px auto; background: rgba(5,25,45,0.9); padding: 40px; border-radius: 12px;">
+        <h2 style="text-align: center; margin-bottom: 30px; color: white;">ВХОД В СИСТЕМУ</h2>
+        
+        {% if form.errors %}
+        <div style="color: #ff5757; margin-bottom: 20px; text-align: center;">
+            Неправильный логин или пароль.
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 20px;">
+                <input type="text" name="username" placeholder="Логин" required 
+                       style="width: 100%; padding: 15px; background: rgba(255,255,255,0.95); border: 2px solid rgba(2,47,255,0.3); border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 30px;">
+                <input type="password" name="password" placeholder="Пароль" required 
+                       style="width: 100%; padding: 15px; background: rgba(255,255,255,0.95); border: 2px solid rgba(2,47,255,0.3); border-radius: 8px;">
+            </div>
+            <button type="submit" style="width: 100%; padding: 18px; background: linear-gradient(135deg, #02f, #0051ff); color: white; border: none; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 1.1rem; cursor: pointer;">
+                ВОЙТИ
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

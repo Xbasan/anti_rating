@@ -1,0 +1,111 @@
+.complaint-form-section {
+    background: rgba(5, 25, 45, 0.9);
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 50px;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 30px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(2, 47, 255, 0.3);
+    border-radius: 8px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1rem;
+    color: rgb(0, 0, 0);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.form-select:hover {
+    border-color: rgba(2, 47, 255, 0.5);
+}
+
+.form_select:focus {
+    border-color: #02f;
+    box-shadow: 0 0 0 3px rgba(2, 47, 255, 0.2);
+}
+
+.form_select:disabled {
+    background: rgba(255, 255, 255, 0.7);
+    color: rgba(2, 47, 255, 0.5);
+    cursor: not-allowed;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(2, 47, 255, 0.3);
+    border-radius: 8px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1rem;
+    color: rgb(0, 0, 0);
+    outline: none;
+    transition: all 0.3s ease;
+    resize: vertical;
+}
+
+.form-submit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 40px;
+    background: linear-gradient(135deg, #02f, #0051ff);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.form-submit-button:hover {
+  background: linear-gradient(135deg, #0051ff, #02f);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 81, 255, 0.3);
+}
+
+.form-submit-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .complaint-form-section {
+    padding: 25px 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 25px;
+  }
+  
+  .form-submit-button {
+    padding: 16px 30px;
+    font-size: 1.1rem;
+  }
+}
