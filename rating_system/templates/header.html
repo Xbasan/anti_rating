@@ -1,0 +1,45 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+
+  {% block link %}
+  {% endblock %}
+  <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="shortcut icon" href="{% static 'css/images/favicon.ico' %}" type="image/x-icon">
+</head>
+<body>
+  <div class="background"></div>
+  
+  <div class="content">
+    <header class="header">
+      <div class="container header__container">
+        <ul class="nav">
+          <li><a href="{% url 'main' %}" class="nav__link {% if request.resolver_match.url_name == 'top' %}nav__link--active{% endif %}"><i class="fas fa-home"></i> Главная</a></li>
+          <li><a href="{% url 'news' %}" class="nav__link {% if request.resolver_match.url_name == 'news' %}nav__link--active{% endif %}"><i class="fas fa-newspaper"></i> Новости</a></li>
+          <li><a href="{% url 'complaint' %}" class="nav__link nav__link--button"><i class="fas fa-exclamation-circle"></i> Пожаловаться</a></li>
+        </ul>
+
+           <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+
+                <form method="post" action="{% if user_id != None %}un_login{% else %}loging{% endif %}">
+                {% csrf_token %}
+                  <button class="search__button" name="{% if user_id != 'None' %}un_login{% else %}login{% endif %}"  class="nav__link nav__link--button">
+                      <i class="fas fa-sign-out-alt"></i>{% if user_id != None %}Выйти{% else %}Войти{% endif %}
+                  </button>
+                </form>
+            </div>
+      </div>
+    </header>
+    <main class="container main" >
+        {% block content %}
+        {% endblock %}      
+    </main>
+  </div>
+  
+</body>
+</html>

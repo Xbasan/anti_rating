@@ -35,9 +35,7 @@ class StudentService:
     @staticmethod
     def get_students_with_risk(curator_id=None, group_id=None):
         """Возвращает студентов с информацией о зоне риска"""
-        print(1)
-        students = Student.objects.filter(Q(is_active=True) | Q(total_score__gt=0.1))
-        print(2)
+        students = Student.objects.filter(Q(is_active=True) & Q(total_score__gt=0.1))
         # Фильтры (опционально)
         if curator_id:
             students = students.filter(curator_id=curator_id)
@@ -49,7 +47,7 @@ class StudentService:
         
         # Добавляем информацию о зоне риска
         result = []
-        print(3)
+        print()
         for student in students:
             zone = RiskService.get_zone_for_score(student.total_score)
             
@@ -73,7 +71,6 @@ class StudentService:
                 'coefficient': float(zone.coefficient) if zone else 1.0,
                 'css_class': css_class  # ← ДОБАВИЛИ!
             })
-            print(4)
         
         return result
     
