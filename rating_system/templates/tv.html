@@ -1,0 +1,61 @@
+{% load static %}  <!-- ← ДОБАВЬ ЭТУ СТРОКУ -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Антирейтинг</title>
+  <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="background"></div>
+
+  <div class="content">
+    <main class="container main" >
+     
+      <div class="page-title-block">
+        <h1 class="page-title">АНТИРЕЙТИНГ</h1>
+      </div>
+        
+        <div class="table">
+          
+          <div class="table__header">
+            <div class="table__cell--place">№</div>
+            <div class="table__cell--name">Студент</div>
+            <div class="table__cell--group">Группа</div>
+            <div class="table__cell--complaints">Общий счёт</div>
+            <div class="table__cell--status">Статус</div>
+          </div>
+          
+          <div class="table__body">
+            {% for data in students_with_risk %}
+            {% with student=data.student %}
+            <div class="table__row">
+                <div class="table__cell--place">{{ forloop.counter }}</div>
+                <div class="table__cell--name">{{ student.student_name }}</div>
+                <div class="table__cell--group">{{ student.group.group_name }}</div>
+                <div class="table__cell--complaints">{{ student.total_score }}
+                  
+                </div>
+                <div class="table__cell--status {{ data.css_class }}">
+                    {{ data.risk_status }}
+                </div>
+            </div>
+            {% endwith %}
+            {% empty %}
+            <div class="table__row">
+                <div class="table__cell--name" style="grid-column: 1 / -1; text-align: center; padding: 30px;">
+                    Нарушителей пока нет
+                </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+            </main>
+  </div>
+  
+</body>
+</html>
+

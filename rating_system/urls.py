@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.main_page, name='main'),
+    path('tv', views.tv, name="tv"),
     path('news/', views.news_page, name='news'),
     path('favicon.ico', RedirectView.as_view(url='/static/images/favicon.ico')),
     path('complaint/', views.complaint_page, name='complaint'),

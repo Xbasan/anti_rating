@@ -31,7 +31,7 @@ body::-webkit-scrollbar {
     width: 100vw;
     height: 100vh;
     z-index: -10;
-    background-image: url("images/board.jpg");
+    background-image: url("images/board.jpeg");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;

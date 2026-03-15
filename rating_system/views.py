@@ -43,6 +43,14 @@ def news_page(request):
     
     return render(request, 'news.html', {'complaints': complaints})
 
+def tv(request):
+    students_data = StudentService.get_students_with_risk()
+    return render(request, 'tv.html', {
+        'students_with_risk': students_data,  # ← переименовали!
+    })
+
+
+
 # 3. Вход в систему
 def login_view(request):
     if request.method == 'POST':
@@ -100,6 +108,8 @@ def complaint_page(request):
         'groups': groups,
         'complaint_types': complaint_types,
     })
+
+
 
 # 6. API для получения студентов (для JavaScript)
 @csrf_exempt
