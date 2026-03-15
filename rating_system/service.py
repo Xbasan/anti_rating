@@ -35,20 +35,22 @@ class StudentService:
     @staticmethod
     def get_students_with_risk(curator_id=None, group_id=None):
         """Возвращает студентов с информацией о зоне риска"""
-        students = Student.objects.filter(Q(is_active=True) & Q(total_score__gt=0.1))
-        # Фильтры (опционально)
+        students = Student.objects.filter(Q(is_active=True) & Q(total_score__gt=0.1)).order_by("-total_score")
+        
+        
+        # Фильтры по группе и по куратору зачемто
         if curator_id:
             students = students.filter(curator_id=curator_id)
         if group_id:
             students = students.filter(group_id=group_id)
         
-        # Сортируем по убыванию баллов
-        students = students.order_by('-total_score')
-        
+       
         # Добавляем информацию о зоне риска
         result = []
         print()
         for student in students:
+        
+            # уменщи количество запросов в эту таблицу до 1 
             zone = RiskService.get_zone_for_score(student.total_score)
             
             # Определяем CSS класс

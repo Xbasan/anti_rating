@@ -80,11 +80,11 @@ load_dotenv()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("DB_NAME"),
-        'USER': os.getenv("DB_USER"), 
-        'PASSWORD': os.getenv("DB_PASSWORD"),  
-        'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT"),
+        'NAME': "anti_rating",
+        'USER': "anti_rating", 
+        'PASSWORD': "qazwsx11",  
+        'HOST': "89.44.87.10",
+        'PORT': "5432",
     }
 }
 

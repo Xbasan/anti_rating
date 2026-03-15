@@ -16,14 +16,16 @@
       </div>
       
       <section class="search">
-        <form class="search__form">
+        <form class="search__form" method="post">
+        {% csrf_token %}
           <div class="search__container">
             <i class="fas fa-search search__icon"></i>
-            <input type="text" class="search__input" placeholder="Поиск студента...">
+            <input name="student_name" type="text" class="search__input" placeholder="Поиск студента или группы..." required>
             <button type="submit" class="search__button">ИСКАТЬ</button>
           </div>
         </form>
       </section>
+
 
       <section class="rating">
         <h2 class="rating__title">
