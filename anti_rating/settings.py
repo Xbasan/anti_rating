@@ -80,11 +80,11 @@ load_dotenv()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "anti_rating",
-        'USER': "anti_rating", 
-        'PASSWORD': "qazwsx11",  
-        'HOST': "89.44.87.10",
-        'PORT': "5432",
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"), 
+        'PASSWORD': os.getenv("DB_PASSWORD"),  
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
 
@@ -138,3 +138,8 @@ LOGOUT_REDIRECT_URL = '/'
 SESSION_COOKIE_AGE = 3600  # 1 час
 SESSION_SAVE_EVERY_REQUEST = True  # обновлять таймер при каждом действии
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # закрыть браузер = выход
+
+
+# HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
