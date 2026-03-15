@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-mxc#m!3igdf(vau#x9xa=uux#305%^gs0fgqh%66$z*vi#cbkp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -138,3 +138,8 @@ LOGOUT_REDIRECT_URL = '/'
 SESSION_COOKIE_AGE = 3600  # 1 час
 SESSION_SAVE_EVERY_REQUEST = True  # обновлять таймер при каждом действии
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # закрыть браузер = выход
+
+
+# HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
