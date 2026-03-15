@@ -149,18 +149,6 @@ class Similarity(Func):
 
 # --- API методы для зависимых выпадающих списков (AJAX) ---
 
-def student_list_by_groups(request, id_group):
-    """Список студентов группы для select/дропдауна"""
-    students = Student.objects.filter(
-        group_id=id_group, 
-        is_active=True
-    ).values(
-        'id', 
-        'student_name'
-    )
-    return JsonResponse(list(students), safe=False)
-
-
 def student_list_by_name(request, student_name):
     """Поиск жалоб по имени студента (с использованием сходства строк)"""
     complaints_query = Complaint.objects.annotate(
