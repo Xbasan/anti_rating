@@ -112,10 +112,35 @@ class RiskZoneAdmin(admin.ModelAdmin):
 
 @admin.register(Complaint)
 class ComplaintAdmin(admin.ModelAdmin):
+    # Добавляем status в список отображаемых полей
     list_display = ('id', 'student', 'get_user_name', 'complaint_type', 'status', 'date')
+    
+    # 1. ПОЗВОЛЯЕТ МЕНЯТЬ СТАТУС ПРЯМО В ТАБЛИЦЕ (БЕЗ ПЕРЕХОДА ВНУТРЬ ЗАПИСИ)
+    list_editable = ('status',) 
+    
     list_filter = ('status', 'complaint_type', 'date')
     search_fields = ('student__student_name', 'explanation')
     date_hierarchy = 'date'
+
+    # 2. ГРУППОВЫЕ ДЕЙСТВИЯ (ВЫПАДАЮЩИЙ СПИСОК "ДЕЙСТВИЕ")
+    actions = ['set_approved', 'set_rejected', 'set_pending']
+
+    @admin.action(description='Изменить статус на "Одобрено"')
+    def set_approved(self, request, queryset):
+        updated = queryset.update(status='approved')
+        self.message_user(request, f'Обновлено записей: {updated}. Статус: Одобрено.')
+
+    @admin.action(description='Изменить статус на "Отклонено"')
+    def set_rejected(self, request, queryset):
+        updated = queryset.update(status='rejected')
+        self.message_user(request, f'Обновлено записей: {updated}. Статус: Отклонено.')
+
+    @admin.action(description='Изменить статус на "На рассмотрении"')
+    def set_pending(self, request, queryset):
+        updated = queryset.update(status='pending')
+        self.message_user(request, f'Обновлено записей: {updated}. Статус: На рассмотрении.')
+
+    # --- ВАШИ СУЩЕСТВУЮЩИЕ МЕТОДЫ ---
     
     def get_user_name(self, obj):
         if obj.user and hasattr(obj.user, 'teacher_profile'):
@@ -123,51 +148,9 @@ class ComplaintAdmin(admin.ModelAdmin):
         return 'Неизвестно'
     get_user_name.short_description = 'Преподаватель'
     
-    # Ограничиваем выбор пользователя
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "user":
             kwargs["queryset"] = TeacherProfile.objects.filter(
                 role__in=['teacher', 'admin']
             ).order_by('full_name')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-# from django.contrib import admin
-# from .models import User, ComplaintType, Group, Student, RiskZone, Complaint
-
-# # УДАЛИ ЭТИ ДВЕ СТРОКИ (или закомментируй):
-# # from django.contrib.auth.models import User as AuthUser
-# # from django.contrib.auth.models import Group as AuthGroup
-# # admin.site.unregister(AuthUser)  # ← УДАЛИ
-# # admin.site.unregister(AuthGroup)  # ← УДАЛИ
-
-# # Регистрация твоей модели User
-# # admin.site.register(TeacherProfile)
-# admin.site.register(User)
-
-# @admin.register(ComplaintType)
-# class ComplaintTypeAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'score')
-
-# @admin.register(Group)
-# class GroupAdmin(admin.ModelAdmin):
-#     list_display = ('group_name', 'curator', 'is_active')
-
-# @admin.register(Student)
-# class StudentAdmin(admin.ModelAdmin):
-#     list_display = ('student_name', 'group', 'curator', 'total_score', 'is_active')
-#     readonly_fields = ('curator',)
-    
-#     def save_model(self, request, obj, form, change):
-#         if obj.group and obj.group.curator:
-#             obj.curator = obj.group.curator
-#         super().save_model(request, obj, form, change)
-
-# @admin.register(RiskZone)
-# class RiskZoneAdmin(admin.ModelAdmin):
-#     list_display = ('zone_name', 'min_score', 'max_score', 'coefficient')
-#     ordering = ('min_score',)
-
-# @admin.register(Complaint)
-# class ComplaintAdmin(admin.ModelAdmin):
-#     list_display = ('id', 'student', 'complaint_type', 'status', 'date')
-#     list_filter = ('status', 'complaint_type')
-#     search_fields = ('student__student_name',)

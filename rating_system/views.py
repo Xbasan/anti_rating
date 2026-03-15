@@ -14,20 +14,24 @@ from .service import StudentService, ComplaintService
 def main_page(request):
     # 1. Используем сервис для получения студентов с рисками
     students_data = StudentService.get_students_with_risk()
-    
-    # 2. Поиск (если нужен)
-    search = request.GET.get('search', '')
-    if search:
-        filtered_data = []
-        for data in students_data:
-            if search.lower() in data['student'].student_name.lower():
-                filtered_data.append(data)
-        students_data = filtered_data
-    
+
+    if request.method == "POST":
+        import re
+        
+        def is_valid(s: str) -> bool:
+            return bool(re.match(pattern, s))
+
+        student_name = request.POST.get("student_name")
+        pattern = re.compile(r'[^\W\d_]{1,3}\d\.\d{2}-\d{2}')
+
+        if bool(re.match(pattern, student_name)):
+            return redirect("group_complains", group_name=student_name.upper())
+        
+        return redirect("student_complains", student_name=student_name)
+        
     # 3. Переименуем переменную для шаблона
     return render(request, 'main.html', {
         'students_with_risk': students_data,  # ← переименовали!
-        'search_query': search,
     })
 
 # 2. Страница новостей (жалоб)
@@ -115,9 +119,20 @@ def get_students_by_group(request):
     })
 
 # API методы для зависимых выпадающих списков (AJAX)
+from django.db.models import F, Func, FloatField, Value
+from django.http import JsonResponse
+from django.shortcuts import render
+from .models import Student, Complaint, Group
+
+
 def student_list_by_groups(request, id_group):
-    students = Student.objects.filter(group_id=id_group, is_active=True).values(
-        'id', 'student_name'
+    """Список студентов группы для select/дропдауна"""
+    students = Student.objects.filter(
+        group_id=id_group, 
+        is_active=True
+    ).values(
+        'id', 
+        'student_name'
     )
     return JsonResponse(list(students), safe=False)
 
@@ -127,16 +142,27 @@ class Similarity(Func):
     function = 'similarity'
     output_field = FloatField()
 
+
 def student_list_by_name(request, student_name):
     complaints = Complaint.objects.annotate(
-        similarity_score=Similarity(F('student__student_name'), student_name)
+        similarity_score=Similarity(
+            F('student__student_name'), 
+            Value(student_name)
+        )
     ).filter(
-        similarity_score__gte=0.3
+        similarity_score__gte=0.3,
+        student__is_active=True  # Только активные студенты
     ).values(
-        'id', 'explanation', 'date', 'status',
+        'id', 
+        'explanation', 
+        'date', 
+        'status',
+        'calculated_score',  # Новое поле в структуре
         student_name=F('student__student_name'),
         group_name=F('group__group_name'),
-        user_name=F('user__full_name')
+        # Теперь user — это TeacherProfile, у которого есть full_name
+        user_name=F('user__full_name'),
+        curator_name=F('student__curator__full_name')  # Дополнительно: куратор студента
     ).order_by('-similarity_score', '-id')
 
     title = complaints[0]["student_name"] if complaints.exists() else f"Нет жалоб на {student_name}"
@@ -145,17 +171,28 @@ def student_list_by_name(request, student_name):
         'complains_data': complaints,
         'title': title,
     }
-    return render(request, "core/news.html", context)
+    return render(request, "news.html", context)
 
 
 def group_list_by_name(request, group_name):
+    """Список жалоб по точному названию группы"""
     complaints = Complaint.objects.filter(
-        group__group_name__iexact=group_name
+        group__group_name__iexact=group_name,
+        group__is_active=True  # Только активные группы
     ).values(
-        'id', 'explanation', 'date', 'status',
+        'id', 
+        'explanation', 
+        'date', 
+        'status',
+        'calculated_score',  # Новое поле
         student_name=F('student__student_name'),
         group_name=F('group__group_name'),
-        user_name=F('user__full_name')
+        # TeacherProfile.full_name вместо User.username/get_full_name
+        user_name=F('user__full_name'),
+        # Дополнительные поля из новой структуры
+        curator_name=F('group__curator__full_name'),
+        complaint_type_name=F('complaint_type__name'),
+        complaint_type_score=F('complaint_type__score')
     ).order_by('-id')
 
     title = group_name if complaints.exists() else f"Нет жалоб для группы {group_name}"
@@ -164,4 +201,18 @@ def group_list_by_name(request, group_name):
         'complains_data': complaints,
         'title': title,
     }
-    return render(request, "core/news.html", context)
+    return render(request, "news.html", context)
+
+
+# Дополнительная функция: список групп с кураторами (если нужен для UI)
+def group_list_with_curators(request):
+    """Список активных групп с информацией о кураторах"""
+    groups = Group.objects.filter(
+        is_active=True
+    ).values(
+        'id',
+        'group_name',
+        curator_name=F('curator__full_name'),
+        curator_role=F('curator__role')
+    )
+    return JsonResponse(list(groups), safe=False)
